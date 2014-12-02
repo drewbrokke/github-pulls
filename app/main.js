@@ -11,7 +11,9 @@ var Window = gui.Window.get();
 
 var mb = new gui.Menu({type:'menubar'});
 
-mb.createMacBuiltin('Github Pulls');
+if (mb.createMacBuiltin) {
+	mb.createMacBuiltin('Github Pulls');
+}
 
 Window.menu = mb;
 
@@ -52,10 +54,12 @@ process.once('uncaughtException', function (err) {
     console.log(err);
 });
 
-var editMenu = mb.items[1];
+if (mb.items.length) {
+	var editMenu = mb.items[1];
 
-editMenu.submenu.insert(reloadMenuItem, 0);
-editMenu.submenu.insert(reloadFullMenuItem, 1);
+	editMenu.submenu.insert(reloadMenuItem, 0);
+	editMenu.submenu.insert(reloadFullMenuItem, 1);
+}
 
 window.resizeTo(window.innerWidth, Math.max(window.innerWidth, screen.height - 100, 930));
 
