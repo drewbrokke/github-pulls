@@ -12,4 +12,7 @@ build/osx/post_build.sh
 build/osx/cache/
 build/osx/Github Pulls/
 
+build/linux/cache/
+build/linux/github-pulls
+
 npm-debug.log
