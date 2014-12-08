@@ -7,8 +7,8 @@ var path = require('path');
 var exec = require('child_process').exec;
 
 
-var APP_NAME = 'Github Pulls';
-var APP_NAME_BIN = APP_NAME + "-bin"
+var APP_NAME = 'github-pulls';
+var ARCH = 'linux64';
 
 var BASE_PATH = __dirname;
 var ROOT_PATH = path.join(BASE_PATH, '../..');
@@ -16,15 +16,16 @@ var ROOT_PATH = path.join(BASE_PATH, '../..');
 var APP_SRC_PATH = path.join(ROOT_PATH, 'app');
 var BIN_PATH = path.join(ROOT_PATH, 'bin');
 var BUILD_APP_DIR = path.join(BASE_PATH, APP_NAME);
-var BUILD_APP_PATH = path.join(BUILD_APP_DIR, 'linux', APP_NAME);
+var BUILD_ARCH_DIR = path.join(BUILD_APP_DIR, ARCH);
+var BUILD_APP_PATH = path.join(BUILD_APP_DIR, ARCH, APP_NAME);
 
 var NwBuilder = require('node-webkit-builder');
 
 var nw = new NwBuilder(
 	{
 		files: APP_SRC_PATH + '/**/**',
-		platforms: ['linux64'],
-		appName: APP_NAME_BIN,
+		platforms: [ARCH],
+		appName: APP_NAME,
 		buildDir: BASE_PATH,
 	}
 );
@@ -36,6 +37,7 @@ async.series(
 		installNpmModules,
 		installBowerComponents,
 		build,
+		packageApp,
 		install
 	],
 	function(err) {
@@ -49,7 +51,32 @@ async.series(
 );
 
 function build(callback) {
-	nw.build().then(
+	nw.build()
+	.then(
+		function() {
+			var files = fs.readdirSync('resources');
+
+			files.forEach(function(file) {
+				var fileSrc = path.join('resources',file);
+
+				if ((file.indexOf('.sh') != -1)) {
+					var fileDest = path.join(BUILD_ARCH_DIR, file);
+
+					fs.copySync(fileSrc, fileDest);
+					fs.chmodSync(fileDest, '0755');
+				}
+				else {
+					fs.copySync(fileSrc, path.join(BUILD_ARCH_DIR, 'resources', file));
+				}
+
+				console.log('File ', file, ' copied successfully.');
+			});
+
+			fs.renameSync(path.join(BUILD_ARCH_DIR, 'github-pulls'), path.join(BUILD_ARCH_DIR, 'github-pulls-bin'));
+			fs.renameSync(path.join(BUILD_ARCH_DIR, 'github-pulls-wrapper.sh'), path.join(BUILD_ARCH_DIR, 'github-pulls'));
+		}
+	)
+	.then(
 		function() {
 			console.log('build success');
 			callback();
@@ -128,4 +155,34 @@ function install(callback) {
 	else {
 		callback();
 	}
+}
+
+function packageApp(callback) {
+	var renameBuildArchDir = path.join(BUILD_APP_DIR, "github-pulls-" + ARCH);
+
+	fs.rename(BUILD_ARCH_DIR, renameBuildArchDir, function(err) {
+		if (!err) {
+			console.log('Packaging tarball...');
+
+			exec(
+				'tar -cvzf ' + APP_NAME + '-' + ARCH + '.tar.gz ' + APP_NAME + '-' + ARCH,
+				{
+					cwd: BUILD_APP_DIR
+				},
+				function(err, stdout, stderr) {
+					if (err) {
+						callback(err);
+					}
+					else {
+						console.log(stdout || stderr);
+
+						callback();
+					}
+				}
+			);
+		}
+		else {
+			console.log('err: ', err);
+		}
+	});
 }

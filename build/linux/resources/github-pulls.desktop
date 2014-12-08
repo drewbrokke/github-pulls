@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Github Pulls
+GenericName=Pulls
+Comment=View your Github pull requests in a nice window
+Exec=github-pulls
+Icon=github-pulls
+StartupNotify=
+Terminal=false
+Type=Application
+Categories=Developer
