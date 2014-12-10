@@ -1,20 +1,47 @@
 #!/bin/bash
 
-curl --remote-name https://raw.githubusercontent.com/drewbrokke/github-pulls/test-branch/build/linux/github-pulls-linux64.tar.gz
+BGreen='\e[1;32m'       # Green
+BWhite='\e[1;37m'       # White
+Color_Off='\e[0m'       # Text Reset
 
-mv github-pulls-linux64.tar.gz /opt
+function alert () {
+	if (( $# )); then
+		echo -e "$BGreen> $BWhite$1$Color_Off"
+	fi
+}
 
-cd /opt
-
-tar -xzf github-pulls-linux64.tar.gz
-
-cd github-pulls-linux64
-
+## System directory variables
 APPDIR=/opt
 RESOURCES=/usr/share
 EXEDIR=/usr/bin
 
+## Download tarball archive
+alert "Downloading archive..."
+curl --remote-name https://raw.githubusercontent.com/drewbrokke/github-pulls/test-branch/build/linux/github-pulls-linux64.tar.gz
+
+## Extract archive
+alert "Extracting archive..."
+tar -xzf github-pulls-linux64.tar.gz
+
+## Cleanup archive
+alert "Removing archive..."
+rm github-pulls-linux64.tar.gz
+
+## Remove existing application folder
+alert "Checking for existing application folder..."
+if [ -e $APPDIR/github-pulls-linux64 ]; then
+  alert "Removing old application folder..."
+  rm -r $APPDIR/github-pulls-linux64
+fi
+
+## Move application folder to /opt folder
+alert "Moving application folder to /opt..."
+mv github-pulls-linux64 /opt
+
+cd /opt/github-pulls-linux64
+
 ## Install .desktop file
+alert "Moving .desktop file..."
 if [ -e $RESOURCES/applications/github-pulls.desktop ]; then
   rm $RESOURCES/applications/github-pulls.desktop
 fi
@@ -22,6 +49,7 @@ fi
 mv resources/github-pulls.desktop $RESOURCES/applications
 
 ## Install icon
+alert "Moving icon..."
 if [ -e $RESOURCES/pixmaps/github-pulls.png ]; then
   rm $RESOURCES/pixmaps/github-pulls.png
 fi
@@ -29,6 +57,7 @@ fi
 mv resources/github-pulls.png $RESOURCES/pixmaps
 
 ## Create symbolic link
+alert "Making symbolic link..."
 if [ -e $EXEDIR/github-pulls ]; then
   rm $EXEDIR/github-pulls
 fi
@@ -36,6 +65,7 @@ fi
 ln -s $APPDIR/github-pulls-linux64/github-pulls $EXEDIR
 
 ## Create local symlink for missing libudev.so.0
+alert "Creating local symlink for missing library..."
 paths=(
   "/lib/x86_64-linux-gnu/libudev.so.1" # Ubuntu, Xubuntu, Mint
   "/usr/lib64/libudev.so.1" # SUSE, Fedora
@@ -51,5 +81,4 @@ do
   fi
 done
 
-## Cleanup
-rm ../github-pulls-linux64.tar.gz
+alert "Github Pulls installed!  You can run it by typing 'github-pulls' in the command line."

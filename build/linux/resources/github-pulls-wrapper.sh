@@ -1,9 +1,14 @@
 #!/bin/bash
-MYAPP_WRAPPER="`readlink -f "$0"`"
-HERE="`dirname "$MYAPP_WRAPPER"`"
 
-# Always use our versions of ffmpeg libs.
-# This also makes RPMs find our library symlinks.
-export LD_LIBRARY_PATH=$([ -n "$LD_LIBRARY_PATH" ] && echo "$HERE:$HERE/lib:$LD_LIBRARY_PATH" || echo "$HERE:$HERE/lib")
+if [[ $1 == "uninstall" ]]; then
+	sudo bash /opt/github-pulls-linux64/uninstall.sh
+else
+	MYAPP_WRAPPER="`readlink -f "$0"`"
+	HERE="`dirname "$MYAPP_WRAPPER"`"
 
-exec -a "$0" "$HERE/github-pulls-bin"  "$@"
+	# Always use our versions of ffmpeg libs.
+	# This also makes RPMs find our library symlinks.
+	export LD_LIBRARY_PATH=$([ -n "$LD_LIBRARY_PATH" ] && echo "$HERE:$HERE/lib:$LD_LIBRARY_PATH" || echo "$HERE:$HERE/lib")
+
+	exec -a "$0" "$HERE/github-pulls-bin"  "$@"
+fi
