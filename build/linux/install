@@ -1,10 +1,18 @@
 #!/bin/bash
+Green='\e[0;32m'        # Green
+White='\e[0;37m'        # White
 
 BGreen='\e[1;32m'       # Green
 BWhite='\e[1;37m'       # White
 Color_Off='\e[0m'       # Text Reset
 
 function alert () {
+	if (( $# )); then
+		echo -e "$Green> $White$1$Color_Off"
+	fi
+}
+
+function boldAlert () {
 	if (( $# )); then
 		echo -e "$BGreen> $BWhite$1$Color_Off"
 	fi
@@ -81,4 +89,7 @@ do
   fi
 done
 
-alert "Github Pulls installed!  You can run it by typing 'github-pulls' in the command line."
+echo ""
+boldAlert "Github Pulls installed!"
+alert "Run it by typing 'github-pulls' in the command line."
+alert "Uninstall by typing 'github-pulls uninstall'."

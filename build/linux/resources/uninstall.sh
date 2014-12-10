@@ -1,10 +1,19 @@
 #!/bin/bash
 
+Green='\e[0;32m'        # Green
+White='\e[0;37m'        # White
+
 BGreen='\e[1;32m'       # Green
 BWhite='\e[1;37m'       # White
 Color_Off='\e[0m'       # Text Reset
 
 function alert () {
+	if (( $# )); then
+		echo -e "$Green> $White$1$Color_Off"
+	fi
+}
+
+function boldAlert () {
 	if (( $# )); then
 		echo -e "$BGreen> $BWhite$1$Color_Off"
 	fi
@@ -42,4 +51,5 @@ if [ -e $APPDIR/github-pulls-linux64 ]; then
   rm -r $APPDIR/github-pulls-linux64
 fi
 
-alert "Github Pulls uninstalled :)"
+echo ""
+boldAlert "Github Pulls uninstalled :)"
