@@ -10,4 +10,4 @@ After executing the install script, you can run from the command line with `gith
 You can also double-click the icon found in `/usr/share/applications`.
 
 ###To Uninstall
-- Execute the included *uninstall.sh* script with: `sudo ./uninstall.sh`
+- Type `github-pulls uninstall`
