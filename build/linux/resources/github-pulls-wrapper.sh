@@ -10,5 +10,5 @@ else
 	# This also makes RPMs find our library symlinks.
 	export LD_LIBRARY_PATH=$([ -n "$LD_LIBRARY_PATH" ] && echo "$HERE:$HERE/lib:$LD_LIBRARY_PATH" || echo "$HERE:$HERE/lib")
 
-	exec -a "$0" "$HERE/github-pulls-bin"  "$@"
+	exec -a "$0" "$HERE/github-pulls-bin"  "$@" </dev/null &>/dev/null & disown
 fi
