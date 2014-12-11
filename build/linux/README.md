@@ -2,9 +2,7 @@
 
 ###To Install:
 ```
-curl --remote-name https://raw.githubusercontent.com/drewbrokke/github-pulls/test-branch/build/linux/install
-less install
-sudo bash install 2>&1 | tee ~/github-pulls.log
+curl -s https://raw.githubusercontent.com/drewbrokke/github-pulls/test-branch/build/linux/install | sudo bash
 ```
 
 ###Running:
